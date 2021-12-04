@@ -2,7 +2,7 @@ package aoc.day04
 
 data class BingoNumber(val num : Int, var called : Boolean)
 
-class Board(val board : List<List<BingoNumber>>, var last : Boolean) {
+class Board(val board : List<List<BingoNumber>>) {
     
     fun bingo() : Boolean {
         val rows = board.map { it.count { it.called } }.contains(5)
@@ -62,7 +62,7 @@ fun String.toBingoSubystem() : BingoSubSystem {
         .map{ chunkOf6Lines -> chunkOf6Lines.drop(1).map { line ->
             line.windowed(2, 3).map { BingoNumber(Integer.parseInt(it.trim()), false) }
         }}
-        .map { Board(it, false) }
+        .map { Board(it) }
     return BingoSubSystem(boards, nums)
 }
 
