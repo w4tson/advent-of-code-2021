@@ -1,7 +1,6 @@
 package aoc.day04
 
 import aoc.Util
-import org.junit.Assert.*
 import org.junit.Test
 
 class Day04Test {
@@ -11,14 +10,26 @@ class Day04Test {
     @Test
     fun exmaple() {
         val bingoSubystem = exampleInput.toBingoSubystem()
-        bingoSubystem.callAll()
+        bingoSubystem.findFirstWinner()
 
     }
 
     @Test
     fun part1() {
         val toBingoSubystem = input.toBingoSubystem()
-        toBingoSubystem.callAll()
+        toBingoSubystem.findFirstWinner()
 
+    }
+
+    @Test
+    fun example2() {
+        val bingoSubystem = exampleInput.toBingoSubystem()
+        bingoSubystem.findLastWinner()
+    }
+
+    @Test
+    fun part2() {
+        val bingoSubystem = input.toBingoSubystem()
+        bingoSubystem.findLastWinner()
     }
 }

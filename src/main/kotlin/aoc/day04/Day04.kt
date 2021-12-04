@@ -1,10 +1,9 @@
 package aoc.day04
 
-import aoc.takeWhileInclusive
-
 data class BingoNumber(val num : Int, var called : Boolean)
 
-class Board(val board : List<List<BingoNumber>>){
+class Board(val board : List<List<BingoNumber>>, var last : Boolean) {
+    
     fun bingo() : Boolean {
         val rows = board.map { it.count { it.called } }.contains(5)
         val cols = (0..4).map { i -> board.map { it[i] } }.map { it.count { it.called } }.contains(5)
@@ -26,42 +25,35 @@ class Board(val board : List<List<BingoNumber>>){
                 println() 
         }
     }
-    
-    
 }
 
 class BingoSubSystem(var boards: List<Board>, val nums : List<Int>) {
+    var winners = mutableListOf<Pair<Board, Int>>()
     
-    fun call(n : Int) : Int? {
-        boards.forEach { 
-            it.board.forEach{ 
+    fun call(n : Int) {
+        boards.forEach { board ->
+            board.board.forEach{ 
                 it.forEach{ if (n == it.num) it.called=true}
             }
             
-            if (it.bingo()){
-                it.display()
-                val sumOfUnmarked = it.sumOfUnmarked()
-                val score = sumOfUnmarked * n
-                println("BINGO! n=$n  sumofunmarked=${sumOfUnmarked} score=${score}")
-                return score
+            if (board.bingo() && !winners.any { board == it.first }) {
+                val score = board.sumOfUnmarked() * n
+                winners.add(Pair(board, score))
             }
-            
         }
-        
-        return null
     }
     
-    fun callAll() {
-        val last = nums.takeWhile { this.call(it) == null }
-        println(last)
+    fun findFirstWinner() {
+        nums.forEach { call(it) }
+        println(winners.first().second)
     }
     
+    fun findLastWinner() {
+        nums.forEach { call(it) }
+        println(winners.last().second)
+    }
 }
 
-class Day04 {
-    
-    
-}
 
 fun String.toBingoSubystem() : BingoSubSystem {
     val lines = this.lines()
@@ -70,7 +62,7 @@ fun String.toBingoSubystem() : BingoSubSystem {
         .map{ chunkOf6Lines -> chunkOf6Lines.drop(1).map { line ->
             line.windowed(2, 3).map { BingoNumber(Integer.parseInt(it.trim()), false) }
         }}
-        .map { Board(it) }
+        .map { Board(it, false) }
     return BingoSubSystem(boards, nums)
 }
 
@@ -78,4 +70,3 @@ fun String.toBingoSubystem() : BingoSubSystem {
 fun String.toListOfInt(): List<Int> {
     return this.split(",").map { it.toInt() }
 }
-//each window is a list of string
