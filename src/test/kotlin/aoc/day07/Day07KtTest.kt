@@ -12,11 +12,21 @@ class Day07KtTest{
     
     @Test
     fun example() {
-        assertEquals(37, part1(example))
+        assertEquals(37, calc(example))
     }
 
     @Test
     fun part1() {
-        println(part1(input))
+        println(calc(input))
+    }
+
+    @Test
+    fun part2() {
+        assertEquals(168, calc(example, ::distanceMeasure2))
+    }
+
+    @Test
+    fun name() {
+        println(calc(input, ::distanceMeasure2))
     }
 }
