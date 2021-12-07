@@ -12,8 +12,8 @@ class FishGenTest{
     
     @Test
     fun exqmple() {
-        assertEquals(26, fishSimulSeq(exmapleInput).take(19).last().count())
-        assertEquals(5934, fishSimulSeq(exmapleInput).take(81).last().count())
+        assertEquals(26, fishSimulSeq2(exmapleInput).take(19).last().count())
+        assertEquals(5934, fishSimulSeq2(exmapleInput).take(81).last().count())
     }
 
     @Test
@@ -22,9 +22,12 @@ class FishGenTest{
     }
 
     @Test
-    fun foo() {
-        fishSimulSeq(listOf(2L)).take(30).forEachIndexed { i, it -> println("${i.toString().padStart(2)} ${it}")}
+    fun example2() {
+        assertEquals(26984457539L, part2(exmapleInput))
     }
 
-
+    @Test
+    fun part2() {
+        println(part2(input))
+    }
 }
