@@ -75,3 +75,11 @@ fun <T> List<T>.toDeque() :Deque<T> {
     this.forEach { d.addLast(it) }
     return d
 }
+
+fun String.toListOfInt(): List<Int> {
+    return this.split(",").map { it.toInt() }
+}
+
+fun String.toListOfLong(): List<Long> {
+    return this.split(",").map { it.toLong() }
+}

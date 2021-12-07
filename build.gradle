@@ -25,3 +25,7 @@ dependencies {
     // Use the Kotlin JUnit integration.
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 }
+
+test {
+    jvmArgs '-Xmx5G'
+}

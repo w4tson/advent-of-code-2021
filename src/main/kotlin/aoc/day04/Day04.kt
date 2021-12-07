@@ -1,5 +1,7 @@
 package aoc.day04
 
+import aoc.toListOfInt
+
 data class BingoNumber(val num : Int, var called : Boolean)
 
 class Board(val board : List<List<BingoNumber>>) {
@@ -67,6 +69,4 @@ fun String.toBingoSubystem() : BingoSubSystem {
 }
 
 
-fun String.toListOfInt(): List<Int> {
-    return this.split(",").map { it.toInt() }
-}
+
