@@ -22,6 +22,8 @@ dependencies {
     // Use the Kotlin test library.
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
 
+    implementation "com.google.guava:guava:31.0.1-jre"
+
     // Use the Kotlin JUnit integration.
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit'
 }

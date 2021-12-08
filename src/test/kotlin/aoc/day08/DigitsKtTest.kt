@@ -19,6 +19,16 @@ class DigitsKtTest{
 
     @Test
     fun example2() {
-        part2(exampleInput)
+        assertEquals(5353, countDigit("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab | cdfeb fcadb cdfeb cdbaf"))
+    }
+
+    @Test
+    fun example21() {
+        assertEquals(61229, exampleInput.lines().map { countDigit(it) }.sum())
+    }
+
+    @Test
+    fun part2() {
+        println(input.lines().map { countDigit(it) }.sum())
     }
 }
