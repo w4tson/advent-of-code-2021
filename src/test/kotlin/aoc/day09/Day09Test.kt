@@ -27,5 +27,20 @@ class Day09Test {
         val grid = exampleInput.toGrid()
         assertEquals(1134, HeatMap(grid).topThreeBasins())
     }
+
+    @Test
+    fun part2() {
+        val grid = input.toGrid()
+        val res = HeatMap(grid).topThreeBasins()
+        println(res)
+    }
+
+    @Test
+    fun adsf() {
+        val one = HeatMap(exampleInput.toGrid()).findBasin(Coord(1, 0), emptySet())
+        val two = HeatMap(exampleInput.toGrid()).findBasin(Coord(9, 0), emptySet())
+        println(one)
+        println(two)
+    }
 }
 
