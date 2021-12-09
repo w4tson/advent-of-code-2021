@@ -7,15 +7,20 @@ class HeatMap(val grid : Grid) {
 
     private var width : Int = grid[0].size
     private var height : Int = grid.size
-    
-    fun topThreeBasins() : Int {
+
+    val neighbours = listOf(
+        Coord(0, -1),
+        Coord(0, +1),
+        Coord(-1, 0),
+        Coord(+1, 0)
+    )
+
+    fun productOfTopThree() : Int {
         val res =  basins().sorted().reversed().take(3)
-        return res.get(0) * res.get(1)* res.get(2)
+        return res.get(0) * res.get(1) * res.get(2)
     }
-    
-    fun basins() : List<Int> {
-        return findLowPoints().map { findBasin(it, emptySet()).count() }
-    }
+
+    fun basins() : List<Int> = findLowPoints().map { findBasin(it, emptySet()).count() }
             
     fun riskLevel() : Int{
         var risk = 0
@@ -48,27 +53,16 @@ class HeatMap(val grid : Grid) {
     }
 
     fun surroundingCoords(pos : Coord) : List<Coord> {
-
-        return listOf(
-            Coord(0,-1),
-            Coord(0,+1),
-            Coord(-1,0),
-            Coord(+1,0)
-        ).map{ (a,b) ->  Coord(a+pos.first, b+pos.second)}
+        return neighbours.map{ (a,b) ->  Coord(a+pos.first, b+pos.second)}
         .filter { withinBounds(it) }
     }
-
+    
     fun findBasin(pos : Coord, basin: Set<Coord>) : Set<Coord> {
-
-        val surrounding = listOf(
-            Coord(0, -1),
-            Coord(0, +1),
-            Coord(-1, 0),
-            Coord(+1, 0)
-        ).map { (a, b) -> Coord(a + pos.first, b + pos.second) }
-            .filter { withinBounds(it) }
+        val surrounding = surroundingCoords(pos)
             .filter { grid[it.second][it.first] != 9 }
-            .filter { !basin.contains(it) }.toSet()
+            .filter { grid[it.second][it.first] > grid[pos.second][pos.first] }
+            .filter { !basin.contains(it) }
+            .toSet()
         return if (surrounding.isEmpty()) {
             surrounding
         } else {
@@ -77,25 +71,8 @@ class HeatMap(val grid : Grid) {
     }
 
     fun withinBounds(pos: Coord) : Boolean = pos.first in 0 until width && pos.second >= 0 && pos.second < height
-
-    fun display() {
-        grid.forEach {
-            it.forEach {
-                print(it)
-            }
-            println()
-        }
-        println()
-    }
-
-    fun lineOfSightSequence(init: Coord, vector: Coord) : Sequence<Coord> {
-        return generateSequence(Coord(init.first + vector.first, init.second + vector.second),
-            { (x ,y) -> Coord(x + vector.first, y + vector.second) })
-    }
 }
 
 fun String.toGrid() : Grid {
     return this.lines().map { it.toCharArray().map { Integer.parseInt("$it") }.toTypedArray() }.toTypedArray()
 }
-
-

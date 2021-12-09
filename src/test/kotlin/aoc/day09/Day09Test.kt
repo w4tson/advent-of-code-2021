@@ -12,7 +12,6 @@ class Day09Test {
     fun example() {
         val grid = exampleInput.toGrid()
         assertEquals(15, HeatMap(grid).riskLevel())
-        HeatMap(grid).display()
     }
 
     @Test
@@ -24,23 +23,13 @@ class Day09Test {
 
     @Test
     fun example2() {
-        val grid = exampleInput.toGrid()
-        assertEquals(1134, HeatMap(grid).topThreeBasins())
+        assertEquals(1134, HeatMap(exampleInput.toGrid()).productOfTopThree())
     }
 
     @Test
     fun part2() {
-        val grid = input.toGrid()
-        val res = HeatMap(grid).topThreeBasins()
+        val res = HeatMap(input.toGrid()).productOfTopThree()
         println(res)
-    }
-
-    @Test
-    fun adsf() {
-        val one = HeatMap(exampleInput.toGrid()).findBasin(Coord(1, 0), emptySet())
-        val two = HeatMap(exampleInput.toGrid()).findBasin(Coord(9, 0), emptySet())
-        println(one)
-        println(two)
     }
 }
 
