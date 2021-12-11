@@ -16,12 +16,35 @@ val corruptionScores = mapOf(
     '>' to 25137
 )
 
-open class Chunk(val char: Char, open var children : MutableList<Chunk>) 
+val completionScoreMap = mapOf(
+    ')' to 1,
+    ']' to 2,
+    '}' to 3,
+    '>' to 4
+)
 
-class RoundBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk('(', children)
-class SquareBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk('[', children)
-class CurlyBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk('{', children)
-class PointyBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk('<', children)
+open class Chunk(open var children : MutableList<Chunk>) 
+
+class RoundBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk(children)
+class SquareBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk(children)
+class CurlyBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk(children)
+class PointyBracket(override var children : MutableList<Chunk> = mutableListOf()): Chunk(children)
+
+fun completionScore(input : String) : Long {
+    val scores = input.lines()
+        .map { isIncomplete(it) }
+        .filter { it != null }
+        .map { calcCompletionScore(it!!)}
+    
+    return scores.sorted().get((scores.size -1) /2)
+}
+    
+
+
+fun calcCompletionScore(toComplete: String) : Long = toComplete.fold(0L) { score, item ->
+    score * 5 + completionScoreMap[item]!!    
+}
+
 
 fun corruptionScore(input : String) : Int = input.lines()
     .map { isCorrupt(it)}
@@ -29,12 +52,25 @@ fun corruptionScore(input : String) : Int = input.lines()
     .map { corruptionScores.getOrDefault(it!!, 0) }
     .sum()
 
-fun isCorrupt(s : String) : Char? {
-    return toChunks(s).fold(onFailure = {
-        (it as CorruptionException).c
+fun isIncomplete(s : String) : String? = toChunks(s)
+    .fold(onFailure = {
+        when(it) {
+            is IncompleteException -> it.message
+            else -> null
+        }
+
     },
     onSuccess = {null})
-}
+
+fun isCorrupt(s : String) : Char? = toChunks(s)
+    .fold(onFailure = {
+        when(it) {
+            is CorruptionException -> it.c
+            else -> null
+        }
+        
+    },
+    onSuccess = {null})
 
 fun toChunks(s : String) : Result<Chunk> {
     val stack = Stack<Chunk>()
@@ -57,6 +93,13 @@ fun toChunks(s : String) : Result<Chunk> {
         } else if (bracketStack.isNotEmpty() && isClosingBracket(it) && bracketMatches[bracketStack.peek()] != it) {
             return Result.failure(CorruptionException(it))
         }
+    }
+    
+    if (bracketStack.isNotEmpty()) {
+        return Result.failure(IncompleteException(
+            bracketStack.reversed()
+                .map { bracketMatches[it] }
+            .joinToString("")))
     }
 
     return Result.success(result!!)
