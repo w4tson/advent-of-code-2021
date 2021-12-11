@@ -31,3 +31,8 @@ dependencies {
 test {
     jvmArgs '-Xmx5G'
 }
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs +=  "-Xallow-result-return-type"
+    }
+}
