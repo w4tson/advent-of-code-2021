@@ -64,6 +64,7 @@ class Day12Test {
     """.trimIndent().lines().toSet()
     
     val example3Input = Util.readInput("/day12/example3.txt")
+    val expectedExamplePart2 = Util.readInput("/day12/expectedExamplePart2.txt").lines().toSet()
     val input = Util.readInput("/day12/input.txt")
     
     @Test
@@ -74,11 +75,6 @@ class Day12Test {
     @Test
     fun example2() {
         val res = Day12(exampleInput2).part1()
-        println(expectedExample2.minus(res))
-        
-        res.contains("start,HN,dc,end")
-        expectedExample2.contains("start,HN,dc,end")
-        
         assertEquals(res, expectedExample2)
     }
 
@@ -90,6 +86,16 @@ class Day12Test {
     @Test
     fun part1() {
         println(Day12(input).part1().size)
+    }
+
+    @Test
+    fun examplePart2() {
+        assertEquals(expectedExamplePart2, Day12(exampleInput).part2())
+    }
+
+    @Test
+    fun part2() {
+        println(Day12(input).part2().size)
     }
 }
 
