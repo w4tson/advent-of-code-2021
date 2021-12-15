@@ -6,6 +6,7 @@ import org.junit.Test
 
 class Day15Test{
     val example = Util.readInput("/day15/example.txt")
+
     @Test
     fun example() {
         println(example)
