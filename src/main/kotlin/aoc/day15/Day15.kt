@@ -7,10 +7,14 @@ data class Coord(val x: Int, val y : Int)
 typealias Path = List<Coord>
 
 class Cave(val input : String) {
-    val grid: Grid = input.toGrid()
+    private val grid: Grid = input.toGrid()
 
     private var width: Int = grid[0].size
     private var height: Int = grid.size
+    val destination = Coord(width - 1, height - 1)
+    var leastRiskyPath : List<Coord> = listOf()
+    val ANSI_CYAN = "\u001B[36m"
+    val ANSI_RESET = "\u001B[0m"
 
     fun surroundingCoords(pos: Coord): List<Coord> {
         return neighbours.map { (a, b) -> Coord(a + pos.x, b + pos.y) }
@@ -19,75 +23,62 @@ class Cave(val input : String) {
 
     fun withinBounds(pos: Coord): Boolean = pos.x in 0 until width && pos.y >= 0 && pos.y < height
 
-//    fun findLeastRiskyPath(): List<Path> {
-//        return findPath(Coord(0,0), listOf(Coord(0,0)), listOf(), listOf())
-//    }
+    fun totalRisk() : Int = findLeastRiskyPath().drop(1).sumBy { grid[it.y][it.x] }
 
-    fun riskOfPath(path: Path): Int {
-        if (path.isEmpty()) return Int.MAX_VALUE
+    fun findLeastRiskyPath(): List<Coord> {
+        val origin = Coord(0, 0)
+        val unsettled = mutableSetOf(origin)
+        val weights = mutableMapOf(origin to 0)
+        val settled = mutableSetOf<Coord>()
+        val parent = mutableMapOf<Coord, Coord>()
 
-        return path.sumBy { grid[it.y][it.x] }
-    }
+        while (unsettled.isNotEmpty()) {
+            val location = unsettled.minBy { weights.getOrDefault(it, Int.MAX_VALUE) }!!  
+            val currentWeight = weights.getOrDefault(location, Int.MAX_VALUE)
+            settled.add(location)
 
-
-    fun findLeastRiskyPath() {
-        val paths = mutableListOf<Path>()
-        val locations = Stack<Coord>()
-        locations.push(Coord(0, 0))
-        var leastRiskyPath = listOf<Coord>()
-        val visited = mutableListOf<Path>()
-
-        while (!locations.isEmpty()) {
-
-            val location = locations.pop()
-            val newPaths = paths.map { it + location }.filter { !visited.contains(it) }
-            visited.addAll(newPaths)
-
-            if (location == Coord(width - 1, height - 1)) {
-                leastRiskyPath = newPaths.fold(leastRiskyPath) { acc, it ->
-                    if (riskOfPath(acc) < riskOfPath(it)) {
-                        acc
-                    } else {
-                        it
+            surroundingCoords(location)
+                .filter{ !settled.contains(it) }
+                .forEach {
+                    unsettled.add(it)
+                    val w = weights.getOrDefault(it, Int.MAX_VALUE)
+                    val newWeight = currentWeight + grid[it.y][it.x]
+                    if (w > newWeight) {
+                        weights[it] = newWeight
+                        parent[it] = location
                     }
                 }
-            }
 
-            surroundingCoords(location).forEach { locations.push(it) }
+            if (location == destination)
+                return printShortestPath(parent, location);
+            
+            unsettled.remove(location)
+
         }
+        return emptyList()
+    }
+    
+    fun printShortestPath(parent: Map<Coord,Coord>, start: Coord) : List<Coord> {
+        val leastRiskyPath = mutableListOf(start)
 
-//    fun findPath(location: Coord, longPaths: List<Path>, currentPaths: List<Path>, path : Path) : Path {
-//        val newPaths = currentPaths.map { it + location }.filter { !longPaths.contains(it) }
-//
-//        if (location == Coord(width-1, height-1)) {
-//            val leastRiskyPathTotal = riskOfPath(path)
-//            val leastRiskyPath = newPaths.fold(path) { acc, it ->
-//                if (riskOfPath(acc) < riskOfPath(it)) {
-//                    acc
-//                } else {
-//                    it
-//                }
-//            }
-//
-//
-//            val leastRiskiestPath = riskOfPath(path)
-//
-//            val pathToRisk = newPaths.associate { Pair(it, riskOfPath(it)) }
-//            val minPath = pathToRisk.minBy { it.value }!!
-//            val newLeastRiskiest = if (minPath.value < leastRiskiestPath) {
-//                minPath.key
-//            } else {
-//                path
-//            }
-//
-//            val seen = surroundingCoords(location)
-//            val potentials = seen.filter { !visited.contains(it) }
-//
-//            potentials.map { findPath(it, visited + location + it, currentPath + it, paths) }
-//            val next = potentials.minBy { grid[it.y][it.x] }!!
-//
-//            return findPath(next, visited + seen, path + next)
-//        }
+        do  {
+            val node = leastRiskyPath.last()
+            parent[node]?.let { leastRiskyPath.add(it) }
+            
+        } while (node != Coord(0,0))
+        this.leastRiskyPath = leastRiskyPath
+        
+        return leastRiskyPath.reversed()
+    }
+    
+    fun display() {
+        (0 until height).forEach { y ->
+            (0 until width).forEach { x ->
+                val color = if (leastRiskyPath.contains(Coord(x,y)) ) { ANSI_CYAN } else { "" }
+                print("${color}${grid[y][x]}$ANSI_RESET")
+            }
+            println()
+        }
     }
 }
 
