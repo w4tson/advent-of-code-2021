@@ -21,4 +21,19 @@ class Day15Test{
         val totalRisk = Cave(input).totalRisk()
         println(totalRisk)
     }
+
+    @Test
+    fun part2Example() {
+        val cave = Cave(example, 5)
+        val totalRisk = cave.totalRisk()
+        cave.display()
+    }
+
+    @Test
+    fun part2() {
+        val cave = Cave(input, 5)
+        val totalRisk = cave.totalRisk()
+        cave.display()
+        println(totalRisk)
+    }
 }

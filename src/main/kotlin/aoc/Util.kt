@@ -11,12 +11,16 @@ class Util {
     }
 }
 
-fun repeatRange(repeat : Int) : Sequence<Int> {
-    return generateSequence(0, { (it+1) % repeat })
+fun repeatRange(from : Int = 0, repeatAfter : Int) : Sequence<Int> {
+    return generateSequence(from, { 
+        if (it == repeatAfter) { from } else { it +1 }
+    })
 }
 
+
+
 fun <T> List<T>.cycle() : Sequence<T> {
-    return repeatRange(this.size).map { this[it] }
+    return repeatRange(repeatAfter =  this.size).map { this[it] }
 }
 
 fun naturalNumbers() : Sequence<Int> = (0..Int.MAX_VALUE).asSequence()

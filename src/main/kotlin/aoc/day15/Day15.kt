@@ -1,16 +1,22 @@
 package aoc.day15
 
-import java.util.*
+import aoc.repeatRange
 
 typealias Grid = Array<Array<Int>>
 data class Coord(val x: Int, val y : Int)
 typealias Path = List<Coord>
 
-class Cave(val input : String) {
+
+
+class Cave(val input : String, multiplier : Int = 1) {
     private val grid: Grid = input.toGrid()
 
-    private var width: Int = grid[0].size
-    private var height: Int = grid.size
+    private val originalWidth = grid[0].size
+    private val originalHeight = grid.size
+    
+    private var width: Int = originalWidth * multiplier
+    private var height: Int = originalHeight * multiplier
+    val origin = Coord(0, 0)
     val destination = Coord(width - 1, height - 1)
     var leastRiskyPath : List<Coord> = listOf()
     val ANSI_CYAN = "\u001B[36m"
@@ -23,10 +29,15 @@ class Cave(val input : String) {
 
     fun withinBounds(pos: Coord): Boolean = pos.x in 0 until width && pos.y >= 0 && pos.y < height
 
-    fun totalRisk() : Int = findLeastRiskyPath().drop(1).sumBy { grid[it.y][it.x] }
+    fun totalRisk() : Int = findLeastRiskyPath().drop(1).sumBy { getRiskAt(it) }
+    
+    fun getRiskAt(coord: Coord) : Int {
+        val originalRisk = grid[coord.y % originalHeight][coord.x % originalWidth]
+        val inc = coord.y / originalHeight + coord.x / originalWidth
+        return repeatRange(1,9).take(originalRisk + inc).last()
+    }
 
     fun findLeastRiskyPath(): List<Coord> {
-        val origin = Coord(0, 0)
         val unsettled = mutableSetOf(origin)
         val weights = mutableMapOf(origin to 0)
         val settled = mutableSetOf<Coord>()
@@ -42,7 +53,7 @@ class Cave(val input : String) {
                 .forEach {
                     unsettled.add(it)
                     val w = weights.getOrDefault(it, Int.MAX_VALUE)
-                    val newWeight = currentWeight + grid[it.y][it.x]
+                    val newWeight = currentWeight + getRiskAt(it)
                     if (w > newWeight) {
                         weights[it] = newWeight
                         parent[it] = location
@@ -65,7 +76,7 @@ class Cave(val input : String) {
             val node = leastRiskyPath.last()
             parent[node]?.let { leastRiskyPath.add(it) }
             
-        } while (node != Coord(0,0))
+        } while (node != origin)
         this.leastRiskyPath = leastRiskyPath
         
         return leastRiskyPath.reversed()
@@ -75,7 +86,7 @@ class Cave(val input : String) {
         (0 until height).forEach { y ->
             (0 until width).forEach { x ->
                 val color = if (leastRiskyPath.contains(Coord(x,y)) ) { ANSI_CYAN } else { "" }
-                print("${color}${grid[y][x]}$ANSI_RESET")
+                print("${color}${getRiskAt(Coord(x,y))}$ANSI_RESET")
             }
             println()
         }
