@@ -87,3 +87,15 @@ fun String.toListOfInt(): List<Int> {
 fun String.toListOfLong(): List<Long> {
     return this.split(",").map { it.toLong() }
 }
+
+data class Coord(val x: Int, val y : Int)
+operator fun Coord.plus(other : Coord) : Coord {
+    return Coord(this.x + other.x, this.y + other.y)
+}
+
+operator fun Coord.rangeTo(other : Coord) : Iterable<Coord> {
+    return (this.y..other.y).flatMap { y ->
+        (this.x..other.x).map { x -> Coord(x,y) }
+    }
+}
+
