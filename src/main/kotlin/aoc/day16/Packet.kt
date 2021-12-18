@@ -54,10 +54,10 @@ class LiteralPayload(val rawPayload: String) : Payload() {
     override fun toString(): String = "Literal Payload [$value] ($payload)"
 }
 
-class Packet(val raw: String) : Payload() {
+class Packet(val input: String, val radix: Int = 16) : Payload() {
     
-    constructor(hex : String, isHex: Boolean) : this(hexStringToBinary(hex)) {}
-    
+//    constructor(hex : String, isHex: Boolean) : this(hexStringToBinary(hex)) {}
+    val raw = if (radix == 2) { input } else { hexStringToBinary(input) }
     val typeId = getTypeId(raw)
     val payload : List<Payload>
     init {
@@ -80,7 +80,7 @@ class Packet(val raw: String) : Payload() {
         val packets = mutableListOf<Packet>()
         var tempRaw = rawPayloads
         do {
-            val p = Packet(tempRaw)
+            val p = Packet(tempRaw, radix =2 )
             packets.add(p)
             tempRaw = tempRaw.drop(p.size())
             
@@ -95,7 +95,7 @@ class Packet(val raw: String) : Payload() {
         
         return (0 until numberOfPackets)
             .fold(Pair(listOf<Packet>(), rawPayloads)) { (packetList,raw), _ ->
-                val packet = Packet(raw)
+                val packet = Packet(raw, radix = 2)
                 Pair(packetList+ packet, raw.drop(packet.size()))
             }.first
     }
