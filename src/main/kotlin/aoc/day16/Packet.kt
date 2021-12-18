@@ -56,7 +56,6 @@ class LiteralPayload(val rawPayload: String) : Payload() {
 
 class Packet(val input: String, val radix: Int = 16) : Payload() {
     
-//    constructor(hex : String, isHex: Boolean) : this(hexStringToBinary(hex)) {}
     val raw = if (radix == 2) { input } else { hexStringToBinary(input) }
     val typeId = getTypeId(raw)
     val payload : List<Payload>
@@ -139,10 +138,7 @@ class Packet(val input: String, val radix: Int = 16) : Payload() {
      
     fun getBitLengthOfPayload() : Int = Integer.parseInt(raw.drop(7).take(15), 2)
     fun getNumberOfPackets() : Int = Integer.parseInt(raw.drop(7).take(11), 2)
-    
-    fun getTypeId(input: String): Int  {
-        return Integer.parseInt(input.drop(3).take(3), 2)
-    }
+    fun getTypeId(input: String): Int = Integer.parseInt(input.drop(3).take(3), 2)
 
     override fun toString(): String {
         var res =  "Packet ${getType()}"
@@ -162,9 +158,7 @@ class Packet(val input: String, val radix: Int = 16) : Payload() {
         else PacketType.OPERATOR_NUMBER
 }
 
-fun hexStringToBinary(hex: String) : String {
-    return hex.map { hexCharToBinaryString(it) }.joinToString("")
-}
+fun hexStringToBinary(hex: String) : String = hex.map { hexCharToBinaryString(it) }.joinToString("")
 
 fun hexCharToBinaryString(hex: Char): String {
     val i = Integer.parseInt("$hex", 16);
