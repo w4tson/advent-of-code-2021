@@ -6,8 +6,6 @@ import aoc.rangeTo
 import java.lang.Integer.max
 import java.lang.Math.abs
 
-
-//target area: x=257..286, y=-101..-57
 class Day17(input: String) {
     
     val targetX : IntRange
@@ -56,15 +54,9 @@ class Day17(input: String) {
     }
        
     fun calcDrag(coord: Coord) : Coord = when {
-        coord.x == 0 -> {
-            Coord(0, 0)
-        }
-        coord.x > 0 -> {
-            Coord(-1,0)
-        }
-        else -> {
-            Coord(1,0)
-        }
+        coord.x == 0 -> origin
+        coord.x > 0 -> Coord(-1,0)
+        else -> Coord(1,0)
     }
     
 }
